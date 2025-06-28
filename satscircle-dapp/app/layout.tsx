@@ -10,13 +10,6 @@ import {
 } from '@rainbow-me/rainbowkit';
 import { WagmiProvider } from 'wagmi';
 import {
-  mainnet,
-  polygon,
-  optimism,
-  arbitrum,
-  base,
-} from 'wagmi/chains';
-import {
   QueryClientProvider,
   QueryClient,
 } from "@tanstack/react-query";
@@ -26,11 +19,6 @@ import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ["latin"] })
 
-// export const metadata: Metadata = {
-//   title: "SatsCircle - Bitcoin Savings Groups",
-//   description: "Join trusted friends in Bitcoin savings circles. Build your Bitcoin stack together.",
-//     generator: 'v0.dev'
-// }
 
 const config = getDefaultConfig({
   appName: 'Satcircle',
