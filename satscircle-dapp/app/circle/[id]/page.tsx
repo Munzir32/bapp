@@ -4,7 +4,10 @@ import { useState, useCallback, useEffect } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useReadCircle, useReadCircleMembers } from "@/hooks/useReadCircle"
 import { useParams } from "next/navigation"
-import { useAccount } from "wagmi"
+import { useAccount, useWriteContract } from "wagmi"
+import { useToast } from "@/hooks/use-toast"
+import { contractAddress } from "@/contracts/constant"
+import ABI from "@/contracts/abi.json"
 import {
   CircleHeader,
   StatusBanner,
@@ -33,8 +36,11 @@ interface CircleData {
 export default function CircleDetail() {
   const params = useParams();
   const { address } = useAccount();
+  const { writeContractAsync } = useWriteContract();
+  const { toast } = useToast();
   const [formattedCircle, setFormattedCircle] = useState<any>(null)
   const [isClient, setIsClient] = useState(false)
+  const [isDistributing, setIsDistributing] = useState(false)
 
   // Ensure we're on the client side
   useEffect(() => {
@@ -173,9 +179,93 @@ export default function CircleDetail() {
       console.log("Sending message:", message)
   }
 
-  const handlePayNow = () => {
-    // Handle payment
-    console.log("Processing payment...")
+  const handlePayNow = async () => {
+    try {
+      if (!address) {
+        toast({
+          title: "Wallet Not Connected",
+          description: "Please connect your wallet to distribute payouts.",
+          variant: "destructive"
+        })
+        return
+      }
+
+      if (!formattedCircle) {
+        toast({
+          title: "Circle Data Not Available",
+          description: "Please wait for circle data to load.",
+          variant: "destructive"
+        })
+        return
+      }
+
+      // Check if user is the circle owner
+      if (address.toLowerCase() !== formattedCircle.owner.toLowerCase()) {
+        toast({
+          title: "Not Authorized",
+          description: "Only the circle owner can distribute payouts.",
+          variant: "destructive"
+        })
+        return
+      }
+
+      setIsDistributing(true)
+
+      console.log("Distributing payout for circle:", params?.id)
+
+      // Call the distributePayout function
+      const result = await writeContractAsync({
+        address: contractAddress as `0x${string}`,
+        abi: ABI,
+        functionName: 'distributePayout',
+        args: [BigInt(params?.id as string)]
+      })
+
+      console.log("Successfully distributed payout:", result)
+
+      // Show success message
+      toast({
+        title: "Payout Distributed! 🎉",
+        description: `Successfully distributed ${formattedCircle.contributionAmountFormatted * formattedCircle.members.length} sats to the next member.`,
+      })
+
+      // Refresh circle data
+      setTimeout(() => {
+        window.location.reload()
+      }, 2000)
+
+    } catch (error: any) {
+      console.error("Error distributing payout:", error)
+      
+      // Handle specific error types
+      let errorMessage = "There was an error distributing the payout. Please try again."
+      
+      if (error.message?.includes("user rejected")) {
+        errorMessage = "Transaction was cancelled. Please try again."
+      } else if (error.message?.includes("Only circle owner")) {
+        errorMessage = "Only the circle owner can distribute payouts."
+      } else if (error.message?.includes("Circle is not active")) {
+        errorMessage = "This circle is not active."
+      } else if (error.message?.includes("Need at least 2 members")) {
+        errorMessage = "Need at least 2 members for payout distribution."
+      } else if (error.message?.includes("Not all members have contributed")) {
+        errorMessage = "Not all members have contributed for this round. Please wait for all contributions."
+      } else if (error.message?.includes("Payout transfer failed")) {
+        errorMessage = "Payout transfer failed. Please try again."
+      } else if (error.message?.includes("network")) {
+        errorMessage = "Network error. Please check your connection and try again."
+      } else if (error.message?.includes("gas")) {
+        errorMessage = "Gas estimation failed. Please try again or increase gas limit."
+      }
+
+      toast({
+        title: "Error Distributing Payout",
+        description: errorMessage,
+        variant: "destructive"
+      })
+    } finally {
+      setIsDistributing(false)
+    }
   }
 
   // Show loading state until client-side hydration is complete
@@ -221,6 +311,8 @@ export default function CircleDetail() {
           membersCount={formattedCircle.members.length}
           contributionAmountFormatted={formattedCircle.contributionAmountFormatted}
           onPayNow={handlePayNow}
+          isDistributing={isDistributing}
+          isOwner={address?.toLowerCase() === formattedCircle.owner.toLowerCase()}
         />
 
         <Tabs defaultValue="overview" className="space-y-6">

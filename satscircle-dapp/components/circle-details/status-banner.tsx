@@ -13,6 +13,8 @@ interface StatusBannerProps {
   membersCount: number
   contributionAmountFormatted: string
   onPayNow: () => void
+  isDistributing?: boolean
+  isOwner?: boolean
 }
 
 export function StatusBanner({
@@ -21,7 +23,9 @@ export function StatusBanner({
   totalBTCSavedFormatted,
   membersCount,
   contributionAmountFormatted,
-  onPayNow
+  onPayNow,
+  isDistributing = false,
+  isOwner = false
 }: StatusBannerProps) {
   return (
     <Card className="mb-6 bg-gradient-to-r from-orange-50 to-amber-50 border-orange-200">
@@ -57,8 +61,21 @@ export function StatusBanner({
                 <span className="text-sm font-medium">{membersCount} members</span>
               </div>
             </div>
-            <Button onClick={onPayNow} className="bg-orange-500 hover:bg-orange-600">
-              Pay Now ({contributionAmountFormatted} sats)
+            <Button 
+              onClick={onPayNow} 
+              disabled={!isOwner || isDistributing}
+              className="bg-orange-500 hover:bg-orange-600 disabled:bg-gray-400"
+            >
+              {isDistributing ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Distributing...
+                </>
+              ) : isOwner ? (
+                `Distribute Payout (${contributionAmountFormatted} sats)`
+              ) : (
+                "Only Owner Can Distribute"
+              )}
             </Button>
           </div>
         </div>
