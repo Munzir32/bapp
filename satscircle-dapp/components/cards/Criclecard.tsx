@@ -85,7 +85,7 @@ const Criclecard = ({ id }: ActiveCardProps) => {
       useEffect(() => {
         formatCircleData()
       }, [formatCircleData])
-
+    
   if (!formattedCircle) {
     return (
       <Card className="hover:shadow-md transition-shadow cursor-pointer">
@@ -102,74 +102,74 @@ const Criclecard = ({ id }: ActiveCardProps) => {
   return (
     <Link href={`/circle/${id}`}>
       <Card className="hover:shadow-md transition-shadow cursor-pointer">
-        <CardContent className="p-6">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex-1">
-              <div className="flex items-center space-x-2 mb-2">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2 mb-2">
                 <h3 className="text-lg font-semibold text-gray-900">{formattedCircle.name}</h3>
-                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                  <Eye className="w-3 h-3 mr-1" />
+                            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                              <Eye className="w-3 h-3 mr-1" />
                   {formattedCircle.visibilityText}
-                </Badge>
-              </div>
+                            </Badge>
+                          </div>
               <p className="text-gray-600 mb-3">Round {formattedCircle.currentRound} of {formattedCircle.totalMembers}</p>
-            </div>
-          </div>
+                        </div>
+                      </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-            <div className="flex items-center space-x-2">
-              <Coins className="w-4 h-4 text-orange-500" />
-              <div>
-                <p className="text-xs text-gray-500">Contribution</p>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                        <div className="flex items-center space-x-2">
+                          <Coins className="w-4 h-4 text-orange-500" />
+                          <div>
+                            <p className="text-xs text-gray-500">Contribution</p>
                 <p className="text-sm font-medium">{formattedCircle.contributionAmountFormatted} sats</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Calendar className="w-4 h-4 text-blue-500" />
-              <div>
-                <p className="text-xs text-gray-500">Frequency</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Calendar className="w-4 h-4 text-blue-500" />
+                          <div>
+                            <p className="text-xs text-gray-500">Frequency</p>
                 <p className="text-sm font-medium">{formattedCircle.frequencyText}</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Users className="w-4 h-4 text-green-500" />
-              <div>
-                <p className="text-xs text-gray-500">Members</p>
-                <p className="text-sm font-medium">
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Users className="w-4 h-4 text-green-500" />
+                          <div>
+                            <p className="text-xs text-gray-500">Members</p>
+                            <p className="text-sm font-medium">
                   {formattedCircle.members}/{formattedCircle.totalMembers}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Clock className="w-4 h-4 text-purple-500" />
-              <div>
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Clock className="w-4 h-4 text-purple-500" />
+                          <div>
                 <p className="text-xs text-gray-500">Progress</p>
                 <p className="text-sm font-medium">{Math.round(formattedCircle.progress)}%</p>
-              </div>
-            </div>
-          </div>
+                          </div>
+                        </div>
+                      </div>
 
-          <div className="flex items-center justify-between pt-4 border-t">
-            <div className="flex items-center space-x-2">
-              <Avatar className="w-6 h-6">
-                <AvatarImage src="/placeholder.svg?height=24&width=24" />
-                <AvatarFallback className="text-xs">
+                      <div className="flex items-center justify-between pt-4 border-t">
+                        <div className="flex items-center space-x-2">
+                          <Avatar className="w-6 h-6">
+                            <AvatarImage src="/placeholder.svg?height=24&width=24" />
+                            <AvatarFallback className="text-xs">
                   {formattedCircle.owner
                     .slice(0, 6)
                     .toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+                            </AvatarFallback>
+                          </Avatar>
               <span className="text-sm text-gray-600">Created by {formattedCircle.owner.slice(0, 6)}...{formattedCircle.owner.slice(-4)}</span>
-            </div>
-            <Button
-              className="bg-orange-500 hover:bg-orange-600"
-            >
-              <CheckCircle className="w-4 h-4 mr-2" />
+                        </div>
+                        <Button
+                          className="bg-orange-500 hover:bg-orange-600"
+                        >
+                              <CheckCircle className="w-4 h-4 mr-2" />
               View Details
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
     </Link>
   )
 }

@@ -8,7 +8,7 @@ import { useReadCircle } from '@/hooks/useReadCircle'
 
 interface CircleData {
   id: bigint
-  name: string
+    name: string
   owner: string
   contributionAmount: bigint
   frequency: number // 0 = WEEKLY, 1 = MONTHLY
@@ -90,52 +90,52 @@ const ActiveCard = ({ id }: ActiveCardProps) => {
   return (
     <Card className="hover:shadow-md transition-shadow cursor-pointer">
       <Link href={`/circle/${id}`}>
-        <CardContent className="p-6">
-          <div className="flex items-start justify-between mb-4">
-            <div>
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
               <h3 className="font-semibold text-lg text-gray-900">{formattedCircle.name}</h3>
-              <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600">
                 {formattedCircle.contributionAmountFormatted} sats • {formattedCircle.frequencyText}
-              </p>
-            </div>
+                    </p>
+                  </div>
             <Badge variant={formattedCircle.nextPayout === "You" ? "default" : "secondary"}>
               {formattedCircle.nextPayout === "You" ? "Your Turn Next!" : `${formattedCircle.nextPayout}'s Turn`}
-            </Badge>
-          </div>
+                  </Badge>
+                </div>
 
-          <div className="space-y-3">
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-gray-600">Circle Progress</span>
+                <div className="space-y-3">
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-600">Circle Progress</span>
                 <span className="font-medium">{formattedCircle.progress.toFixed(1)}%</span>
-              </div>
+                    </div>
               <Progress value={formattedCircle.progress} className="h-2" />
-            </div>
+                  </div>
 
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-1">
-                  <Users className="w-4 h-4 text-gray-400" />
-                  <span className="text-gray-600">
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-1">
+                        <Users className="w-4 h-4 text-gray-400" />
+                        <span className="text-gray-600">
                     {formattedCircle.members}/{formattedCircle.totalMembers} members
-                  </span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Clock className="w-4 h-4 text-gray-400" />
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <Clock className="w-4 h-4 text-gray-400" />
                   <span className="text-gray-600">{formattedCircle.daysUntilContribution} days left</span>
-                </div>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Coins className="w-4 h-4 text-orange-500" />
-                <span className="font-medium text-gray-900">
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Coins className="w-4 h-4 text-orange-500" />
+                      <span className="font-medium text-gray-900">
                   {formattedCircle.totalBTCSavedFormatted} sats saved
-                </span>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Link>
-    </Card>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Link>
+          </Card>
   )
 }
 

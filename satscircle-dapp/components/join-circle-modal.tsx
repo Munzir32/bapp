@@ -27,9 +27,9 @@ export function JoinCircleModal({ open, onOpenChange }: JoinCircleModalProps) {
 
   const handleJoinSuccess = () => {
     // Close modal and reset state
-    onOpenChange(false)
-    setSearchQuery("")
-    setInviteCode("")
+      onOpenChange(false)
+      setSearchQuery("")
+      setInviteCode("")
   }
 
   // TODO: implement this later 
