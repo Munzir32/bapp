@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { MessageCircle, Send } from "lucide-react"
+import { MessageCircle, Send, Wifi, WifiOff } from "lucide-react"
 import { useCircleChat } from "@/lib/useCircleChat"
 
 interface Message {
@@ -18,10 +18,11 @@ interface CircleChatProps {
 }
 
 function CircleChat({ circleId, isMember, userName }: CircleChatProps) {
-  const { messages, sendMessage, isLoadingHistory } = useCircleChat(circleId, isMember, userName) as { 
+  const { messages, sendMessage, isLoadingHistory, isConnected } = useCircleChat(circleId, isMember, userName) as { 
     messages: Message[], 
     sendMessage: (msg: string) => void,
-    isLoadingHistory: boolean
+    isLoadingHistory: boolean,
+    isConnected: boolean
   }
   const [message, setMessage] = useState("")
 
@@ -32,7 +33,7 @@ function CircleChat({ circleId, isMember, userName }: CircleChatProps) {
   }
 
   const handleSendMessage = () => {
-    if (message.trim()) {
+    if (message.trim() && isConnected) {
       sendMessage(message)
       setMessage("")
     }
@@ -41,11 +42,31 @@ function CircleChat({ circleId, isMember, userName }: CircleChatProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
-          <MessageCircle className="w-5 h-5" />
-          <span>Circle Chat</span>
+        <CardTitle className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <MessageCircle className="w-5 h-5" />
+            <span>Circle Chat</span>
+          </div>
+          <div className="flex items-center space-x-2 text-sm">
+            {isConnected ? (
+              <div className="flex items-center space-x-1 text-green-600">
+                <Wifi className="w-4 h-4" />
+                <span>Connected</span>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-1 text-red-600">
+                <WifiOff className="w-4 h-4" />
+                <span>Disconnected</span>
+              </div>
+            )}
+          </div>
         </CardTitle>
-        <CardDescription>Stay connected with your circle members</CardDescription>
+        <CardDescription>
+          {isConnected 
+            ? "Stay connected with your circle members" 
+            : "Reconnecting to chat server..."
+          }
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4 mb-4 max-h-96 overflow-y-auto">
@@ -78,17 +99,27 @@ function CircleChat({ circleId, isMember, userName }: CircleChatProps) {
 
         <div className="flex items-center space-x-2">
           <Input
-            placeholder="Type a message..."
+            placeholder={isConnected ? "Type a message..." : "Connecting..."}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
             className="flex-1"
-            disabled={isLoadingHistory}
+            disabled={isLoadingHistory || !isConnected}
           />
-          <Button onClick={handleSendMessage} size="sm" disabled={isLoadingHistory}>
+          <Button 
+            onClick={handleSendMessage} 
+            size="sm" 
+            disabled={isLoadingHistory || !isConnected || !message.trim()}
+          >
             <Send className="w-4 h-4" />
           </Button>
         </div>
+        
+        {!isConnected && (
+          <div className="mt-2 text-center text-sm text-amber-600">
+            Messages will be sent when connection is restored
+          </div>
+        )}
       </CardContent>
     </Card>
   )

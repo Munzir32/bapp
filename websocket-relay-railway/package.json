@@ -1,0 +1,19 @@
+{
+  "name": "websocket-relay-railway",
+  "version": "1.0.0",
+  "description": "WebSocket relay server for circle chat",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["websocket", "chat", "relay"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.18.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+} 

@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react"
+import Pusher from 'pusher-js'
 import { useIpfs } from "./useIpfs"
 
 interface Message {
@@ -15,7 +16,7 @@ interface CircleMessageIndex {
   lastUpdated: number
 }
 
-export function useCircleChat(
+export function usePusherChat(
   circleId: string,
   isMember: boolean,
   userName: string
@@ -24,11 +25,67 @@ export function useCircleChat(
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoadingHistory, setIsLoadingHistory] = useState(true)
   const [isConnected, setIsConnected] = useState(false)
-  const wsRef = useRef<WebSocket | null>(null)
-  const isConnectedRef = useRef(false)
+  const pusherRef = useRef<Pusher | null>(null)
+  const channelRef = useRef<any>(null)
   const hasLoadedFromIPFSRef = useRef(false)
   const messageIndexCidRef = useRef<string | null>(null)
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Initialize Pusher
+  useEffect(() => {
+    if (!isMember || pusherRef.current) return
+
+    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
+      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
+    })
+
+    pusherRef.current = pusher
+
+    pusher.connection.bind('connected', () => {
+      console.log('Pusher connected')
+      setIsConnected(true)
+    })
+
+    pusher.connection.bind('disconnected', () => {
+      console.log('Pusher disconnected')
+      setIsConnected(false)
+    })
+
+    return () => {
+      pusher.disconnect()
+    }
+  }, [isMember])
+
+  // Subscribe to channel
+  useEffect(() => {
+    if (!pusherRef.current || !circleId || !isMember) return
+
+    const channel = pusherRef.current.subscribe(`circle-${circleId}`)
+    channelRef.current = channel
+
+    channel.bind('new-message', (message: Message) => {
+      console.log('Received new message:', message)
+      
+      // Add unique ID if not present
+      if (!message.id) {
+        message.id = `${Date.now()}-${Math.random()}`
+      }
+      
+      // Check if message already exists to prevent duplicates
+      setMessages((prev) => {
+        const exists = prev.some(m => m.id === message.id || (m.sender === message.sender && m.message === message.message && m.time === message.time))
+        if (exists) {
+          console.log('Duplicate message detected, skipping:', message)
+          return prev
+        }
+        console.log('Adding new message:', message)
+        return [...prev, message]
+      })
+    })
+
+    return () => {
+      pusherRef.current?.unsubscribe(`circle-${circleId}`)
+    }
+  }, [circleId, isMember])
 
   // Load messages from IPFS on mount
   useEffect(() => {
@@ -83,8 +140,6 @@ export function useCircleChat(
   // Helper function to get the message index CID for a circle
   const getCircleMessageIndexCid = async (circleId: string): Promise<string | null> => {
     try {
-      // For now, we'll use a simple approach - store the index CID in localStorage
-      // In a production app, you might want to use a smart contract or a centralized registry
       const storageKey = `circle-${circleId}-index-cid`
       const storedCid = localStorage.getItem(storageKey)
       
@@ -121,107 +176,14 @@ export function useCircleChat(
     return cidString
   }
 
-  // WebSocket connection with reconnection logic
-  const connectWebSocket = useCallback(() => {
-    if (!isMember || isConnectedRef.current) return
-    
-    // Use environment variable for WebSocket URL, fallback to localhost for development
-    const wsUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL || 'ws://localhost:8080'
-    const ws = new WebSocket(wsUrl)
-    wsRef.current = ws
-    isConnectedRef.current = true
-
-    ws.onopen = () => {
-      console.log('WebSocket connected to:', wsUrl)
-      setIsConnected(true)
-      ws.send(JSON.stringify({ circleId }))
-      
-      // Clear any reconnection timeout
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current)
-        reconnectTimeoutRef.current = null
-      }
-    }
-    
-    ws.onmessage = async (event) => {
-      try {
-        // Handle both string and blob data
-        let data: string
-        if (event.data instanceof Blob) {
-          data = await event.data.text()
-        } else {
-          data = event.data
-        }
-        
-        // Skip empty messages
-        if (!data || data.trim() === '') {
-          return
-        }
-        
-        const msg: Message = JSON.parse(data)
-        
-        // Add unique ID if not present
-        if (!msg.id) {
-          msg.id = `${Date.now()}-${Math.random()}`
-        }
-        
-        // Check if message already exists to prevent duplicates
-        setMessages((prev) => {
-          const exists = prev.some(m => m.id === msg.id || (m.sender === msg.sender && m.message === msg.message && m.time === msg.time))
-          if (exists) {
-            console.log('Duplicate message detected, skipping:', msg)
-            return prev
-          }
-          console.log('Adding new message:', msg)
-          return [...prev, msg]
-        })
-      } catch (e) {
-        console.error('Error parsing WebSocket message:', e, 'Raw data:', event.data)
-      }
-    }
-    
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error)
-      setIsConnected(false)
-    }
-    
-    ws.onclose = () => {
-      console.log('WebSocket disconnected')
-      setIsConnected(false)
-      isConnectedRef.current = false
-      
-      // Attempt to reconnect after 3 seconds
-      if (isMember && !reconnectTimeoutRef.current) {
-        reconnectTimeoutRef.current = setTimeout(() => {
-          console.log('Attempting to reconnect WebSocket...')
-          connectWebSocket()
-        }, 3000)
-      }
-    }
-  }, [circleId, isMember])
-
-  useEffect(() => {
-    connectWebSocket()
-    
-    return () => {
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current)
-      }
-      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-        wsRef.current.close()
-      }
-      isConnectedRef.current = false
-    }
-  }, [connectWebSocket])
-
   const sendMessage = useCallback(async (message: string) => {
     if (!ipfs || !isMember) {
       console.error('Cannot send message: IPFS not ready or not a member')
       return
     }
     
-    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
-      console.error('Cannot send message: WebSocket not connected')
+    if (!isConnected) {
+      console.error('Cannot send message: Pusher not connected')
       return
     }
     
@@ -239,13 +201,21 @@ export function useCircleChat(
       // Add CID to message
       const messageWithCid = { ...msgObj, cid: cid.toString() }
       
-      // Send message to relay
-      wsRef.current.send(
-        JSON.stringify({ 
-          circleId, 
+      // Send message via API route
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          circleId,
           message: messageWithCid
-        })
-      )
+        }),
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to send message')
+      }
       
       // Add to local messages immediately
       setMessages((prev) => {
@@ -267,7 +237,7 @@ export function useCircleChat(
     } catch (error) {
       console.error('Error sending message:', error)
     }
-  }, [ipfs, circleId, isMember, userName])
+  }, [ipfs, circleId, isMember, userName, isConnected])
 
   return { messages, sendMessage, isLoadingHistory, isConnected }
 } 
