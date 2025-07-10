@@ -1,21 +1,21 @@
 "use client"
 
-import { useState } from "react"
+// import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Users, Coins, TrendingUp, Shield } from "lucide-react"
 import Link from "next/link"
 export default function LandingPage() {
-  const [isLoading, setIsLoading] = useState(false)
+  // const [isLoading, setIsLoading] = useState(false)
 
-  const handleLogin = async (provider: string) => {
-    setIsLoading(true)
-    // Simulate Web3Auth login
-    setTimeout(() => {
-      window.location.href = "/dashboard"
-    }, 1500)
-  }
+  // const handleLogin = async (provider: string) => {
+  //   setIsLoading(true)
+  //   // Simulate Web3Auth login
+  //   setTimeout(() => {
+  //     window.location.href = "/dashboard"
+  //   }, 1500)
+  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">

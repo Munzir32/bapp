@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useReadCircle, useReadCircleMembers } from "@/hooks/useReadCircle"
 import { useParams } from "next/navigation"
-import { useAccount, useWriteContract } from "wagmi"
+import { useAccount, useWriteContract, useContractRead } from "wagmi"
 import { useToast } from "@/hooks/use-toast"
 import { contractAddress } from "@/contracts/constant"
 import ABI from "@/contracts/abi.json"
@@ -49,6 +49,19 @@ export default function CircleDetail() {
 
   const { circleData } = useReadCircle(params?.id as string)
   const { circleMembers } = useReadCircleMembers(params?.id as string)
+
+  // Use wagmi's useContractRead to check membership
+  const { data: isMemberData } = useContractRead({
+    address: contractAddress as `0x${string}`,
+    abi: ABI,
+    functionName: 'isCircleMember',
+    args: [params?.id ? BigInt(String(params.id)) : BigInt(0), address || '0x0000000000000000000000000000000000000000'],
+    query: {
+      enabled: !!params?.id && !!address,
+    },
+  })
+
+  const isMember = Boolean(isMemberData)
 
   console.log("circleMembers raw data:", circleMembers)
   console.log("circleMembers type:", typeof circleMembers)
@@ -180,106 +193,33 @@ export default function CircleDetail() {
   }
 
   const handlePayNow = async () => {
+    if (!address || !formattedCircle) return
+
     try {
-      if (!address) {
-        toast({
-          title: "Wallet Not Connected",
-          description: "Please connect your wallet to distribute payouts.",
-          variant: "destructive"
-        })
-        return
-      }
-
-      if (!formattedCircle) {
-        toast({
-          title: "Circle Data Not Available",
-          description: "Please wait for circle data to load.",
-          variant: "destructive"
-        })
-        return
-      }
-
-      // Check if user is the circle owner
-      if (address.toLowerCase() !== formattedCircle.owner.toLowerCase()) {
-        toast({
-          title: "Not Authorized",
-          description: "Only the circle owner can distribute payouts.",
-          variant: "destructive"
-        })
-        return
-      }
-
       setIsDistributing(true)
-
-      console.log("Distributing payout for circle:", params?.id)
-
-      // Call the distributePayout function
-      const result = await writeContractAsync({
+      
+      await writeContractAsync({
         address: contractAddress as `0x${string}`,
         abi: ABI,
-        functionName: 'distributePayout',
-        args: [BigInt(params?.id as string)]
+        functionName: 'contribute',
+        args: [formattedCircle.id],
+        value: BigInt(formattedCircle.contributionAmount)
       })
 
-      console.log("Successfully distributed payout:", result)
-
-      // Show success message
       toast({
-        title: "Payout Distributed! 🎉",
-        description: `Successfully distributed ${formattedCircle.contributionAmountFormatted * formattedCircle.members.length} sats to the next member.`,
+        title: "Contribution Successful!",
+        description: `You've contributed ${formattedCircle.contributionAmountFormatted} sats to ${formattedCircle.name}`,
       })
-
-      // Refresh circle data
-      setTimeout(() => {
-        window.location.reload()
-      }, 2000)
-
-    } catch (error: any) {
-      console.error("Error distributing payout:", error)
-      
-      // Handle specific error types
-      let errorMessage = "There was an error distributing the payout. Please try again."
-      
-      if (error.message?.includes("user rejected")) {
-        errorMessage = "Transaction was cancelled. Please try again."
-      } else if (error.message?.includes("Only circle owner")) {
-        errorMessage = "Only the circle owner can distribute payouts."
-      } else if (error.message?.includes("Circle is not active")) {
-        errorMessage = "This circle is not active."
-      } else if (error.message?.includes("Need at least 2 members")) {
-        errorMessage = "Need at least 2 members for payout distribution."
-      } else if (error.message?.includes("Not all members have contributed")) {
-        errorMessage = "Not all members have contributed for this round. Please wait for all contributions."
-      } else if (error.message?.includes("Payout transfer failed")) {
-        errorMessage = "Payout transfer failed. Please try again."
-      } else if (error.message?.includes("network")) {
-        errorMessage = "Network error. Please check your connection and try again."
-      } else if (error.message?.includes("gas")) {
-        errorMessage = "Gas estimation failed. Please try again or increase gas limit."
-      }
-
+    } catch (error) {
+      console.error("Contribution error:", error)
       toast({
-        title: "Error Distributing Payout",
-        description: errorMessage,
-        variant: "destructive"
+        title: "Contribution Failed",
+        description: "There was an error processing your contribution. Please try again.",
+        variant: "destructive",
       })
     } finally {
       setIsDistributing(false)
     }
-  }
-
-  // Show loading state until client-side hydration is complete
-  if (!isClient) {
-  return (
-    <div className="min-h-screen bg-gray-50">
-        <div className="container mx-auto px-4 py-6">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
-            <p className="mt-2 text-gray-600">Loading...</p>
-              </div>
-            </div>
-            </div>
-    )
   }
 
   if (!formattedCircle) {
@@ -342,8 +282,9 @@ export default function CircleDetail() {
 
           <TabsContent value="chat" className="space-y-6">
             <CircleChat 
-              messages={formattedCircle.messages}
-              onSendMessage={handleSendMessage}
+              circleId={params?.id as string}
+              isMember={isMember}
+              userName={address || ""}
             />
           </TabsContent>
 
