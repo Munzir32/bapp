@@ -6,9 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Users, Coins, TrendingUp, Shield } from "lucide-react"
 import Link from "next/link"
+import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
+import { DynamicConnectButton } from "@dynamic-labs/sdk-react-core"
+import { DynamicWidget } from "@dynamic-labs/sdk-react-core"
 export default function LandingPage() {
   // const [isLoading, setIsLoading] = useState(false)
-
+const {setShowAuthFlow } = useDynamicContext()
   // const handleLogin = async (provider: string) => {
   //   setIsLoading(true)
   //   // Simulate Web3Auth login
@@ -85,11 +88,10 @@ export default function LandingPage() {
               Continue with Apple
             </Button> */}
 
-            <Link href="/dashboard">
-              <Button variant="outline" className="w-full h-12">
-                Continue to Dashboard
-              </Button>
-            </Link>
+            <Button variant="outline" className="w-full h-12">
+              <DynamicWidget />
+            </Button>
+            
           </div>
 
           {/* Features Grid */}

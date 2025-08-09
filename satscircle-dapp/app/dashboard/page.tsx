@@ -2,23 +2,23 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Plus, Users, Coins, TrendingUp, Award, Zap, Clock, Target, Star } from "lucide-react"
-import Link from "next/link"
+import { Plus, Users, Coins, Award, Target } from "lucide-react"
 import { CreateCircleModal } from "@/components/create-circle-modal"
 import { JoinCircleModal } from "@/components/join-circle-modal"
 import { ActiveCircles } from "@/components/active-circles"
 import { StatsCards } from "@/components/stats-cards"
 import { BadgesSection } from "@/components/badges-section"
 import { RecentActivity } from "@/components/recent-activity"
-import { ConnectButton } from "@rainbow-me/rainbowkit"
+import { DynamicWidget } from "@dynamic-labs/sdk-react-core"
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core"
+import { useDashboardStats } from "@/hooks/useDashboardStats"
 
 export default function Dashboard() {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showJoinModal, setShowJoinModal] = useState(false)
+  const { user } = useDynamicContext()
+
+  const { stats, isLoading } = useDashboardStats()
 
   const activeCircles = [
     {
@@ -47,12 +47,9 @@ export default function Dashboard() {
     },
   ]
 
-  const stats = {
-    totalSaved: 740000,
-    activeCircles: 2,
-    currentStreak: 8,
-    completedCircles: 1,
-  }
+  const derivedStats = isLoading
+    ? { totalSaved: 0, activeCircles: 0, currentStreak: 0, completedCircles: 0 }
+    : stats
 
   const badges = [
     { name: "Early Adopter", icon: "🚀", earned: true },
@@ -67,9 +64,9 @@ export default function Dashboard() {
       type: "contribution" as const,
       title: "Contributed to Family Savers",
       description: "Made weekly contribution",
-      amount: "+10,000 sats",
+      amount: "+10,000 cBTC",
       icon: Coins,
-      iconBg: "bg-green-100",
+      iconBg: "bg-green-100", 
       iconColor: "text-green-600",
       timestamp: "2 days ago"
     },
@@ -88,7 +85,7 @@ export default function Dashboard() {
       type: "payout" as const,
       title: "Received payout from College Friends",
       description: "Circle payout received",
-      amount: "125,000 sats",
+      amount: "125,000 cBTC",
       icon: Target,
       iconBg: "bg-orange-100",
       iconColor: "text-orange-600",
@@ -108,14 +105,7 @@ export default function Dashboard() {
               </div>
               <span className="text-xl font-bold text-gray-900">SatsCircle</span>
             </div>
-            {/* <div className="flex items-center space-x-3">
-              <Avatar className="w-8 h-8">
-                <AvatarImage src="/placeholder.svg?height=32&width=32" />
-                <AvatarFallback>JD</AvatarFallback>
-              </Avatar>
-              <span className="text-sm font-medium text-gray-700">John Doe</span>
-            </div> */}
-            <ConnectButton />
+            <DynamicWidget />
           </div>
         </div>
       </header>
@@ -123,12 +113,12 @@ export default function Dashboard() {
       <main className="container mx-auto px-4 py-6">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome back, John! 👋</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome back, {user?.email} 👋</h1>
           <p className="text-gray-600">Keep up your great saving streak!</p>
         </div>
 
         {/* Stats Cards */}
-        <StatsCards stats={stats} />
+        <StatsCards stats={derivedStats} />
 
         {/* Quick Actions */}
         <div className="flex flex-col sm:flex-row gap-3 mb-8">
@@ -144,7 +134,6 @@ export default function Dashboard() {
 
         {/* Active Circles */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Your Active Circles</h2>
           <ActiveCircles />
         </div>
 
@@ -152,9 +141,9 @@ export default function Dashboard() {
         <BadgesSection badges={badges} />
 
         {/* Recent Activity */}
-        <RecentActivity activities={activities} />
+        {/* <RecentActivity activities={activities} /> */}
       </main>
-            {/* done */}
+      {/* done */}
       <CreateCircleModal open={showCreateModal} onOpenChange={setShowCreateModal} />
       <JoinCircleModal open={showJoinModal} onOpenChange={setShowJoinModal} />
     </div>

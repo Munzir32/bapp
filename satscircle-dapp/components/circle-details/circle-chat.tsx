@@ -44,8 +44,8 @@ function CircleChat({ circleId, isMember, userName }: CircleChatProps) {
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <MessageCircle className="w-5 h-5" />
-            <span>Circle Chat</span>
+          <MessageCircle className="w-5 h-5" />
+          <span>Circle Chat</span>
           </div>
           <div className="flex items-center space-x-2 text-sm">
             {isConnected ? (
@@ -82,17 +82,17 @@ function CircleChat({ circleId, isMember, userName }: CircleChatProps) {
           ) : (
             messages.map((msg: Message, idx: number) => (
               <div key={idx} className={`flex ${msg.sender === userName ? "justify-end" : "justify-start"}`}>
-                <div
-                  className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+              <div
+                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                     msg.sender === userName ? "bg-orange-500 text-white" : "bg-gray-100 text-gray-900"
-                  }`}
-                >
-                  <p className="text-sm">{msg.message}</p>
+                }`}
+              >
+                <p className="text-sm">{msg.message}</p>
                   <p className={`text-xs mt-1 ${msg.sender === userName ? "text-orange-100" : "text-gray-500"}`}>
-                    {msg.sender} • {msg.time}
-                  </p>
-                </div>
+                  {msg.sender} • {msg.time}
+                </p>
               </div>
+            </div>
             ))
           )}
         </div>
@@ -123,6 +123,6 @@ function CircleChat({ circleId, isMember, userName }: CircleChatProps) {
       </CardContent>
     </Card>
   )
-}
+} 
 
 export default CircleChat; 

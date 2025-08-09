@@ -134,7 +134,7 @@ Railway provides built-in monitoring for:
 - Performance
 - Error tracking
 
-Check your Railway dashboard for real-time insights into your WebSocket server's performance.
+Check your Railway dashboard for real-time insights into your WebSocket server's performance. 
 
 ## Architecture
 

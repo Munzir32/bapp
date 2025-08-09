@@ -349,13 +349,13 @@ export function CreateCircleModal({ open, onOpenChange }: CreateCircleModalProps
                     {formData.contribution && formData.groupSize
                       ? (Number.parseInt(formData.contribution) * Number.parseInt(formData.groupSize)).toLocaleString()
                       : "0"}{" "}
-                    sats
+                    cBTC
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Your contribution:</span>
                   <span className="font-semibold">
-                    {formData.contribution || "0"} sats {formData.frequency}
+                    {formData.contribution || "0"} cBTC {formData.frequency}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -429,7 +429,7 @@ export function CreateCircleModal({ open, onOpenChange }: CreateCircleModalProps
                             Number.parseInt(formData.contribution) * Number.parseInt(formData.groupSize)
                           ).toLocaleString()
                         : "0"}{" "}
-                      sats
+                      cBTC
                     </span>
                   </div>
                 </div>

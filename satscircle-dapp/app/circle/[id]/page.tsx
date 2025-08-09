@@ -197,7 +197,7 @@ export default function CircleDetail() {
 
     try {
       setIsDistributing(true)
-      
+
       await writeContractAsync({
         address: contractAddress as `0x${string}`,
         abi: ABI,

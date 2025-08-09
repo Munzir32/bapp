@@ -19,7 +19,7 @@ export function StatsCards({ stats }: StatsCardsProps) {
     {
       icon: Coins,
       label: "Total Saved",
-      value: `${stats.totalSaved.toLocaleString()} sats`,
+      value: `${stats.totalSaved.toLocaleString()} cBTC`,
       color: "text-orange-500"
     },
     {

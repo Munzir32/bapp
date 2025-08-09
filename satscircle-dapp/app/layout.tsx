@@ -15,17 +15,28 @@ import {
 } from "@tanstack/react-query";
 import { cBtc } from "@/config"
 import { Toaster } from "@/components/ui/toaster"
-
+import {
+  DynamicContextProvider,
+  DynamicWidget,
+} from '@dynamic-labs/sdk-react-core';
+import { EthereumWalletConnectors } from '@dynamic-labs/ethereum';
+import { DynamicWagmiConnector } from '@dynamic-labs/wagmi-connector';
+import { http } from 'viem';
+import { createConfig } from "wagmi"
 
 const inter = Inter({ subsets: ["latin"] })
 
 
-const config = getDefaultConfig({
-  appName: 'Satcircle',
-  projectId: '85b280b0a9d7ee0853821de8046f20bc',
+const config = createConfig({
   chains: [cBtc],
-  ssr: true, // If your dApp uses server side rendering (SSR)
+  multiInjectedProviderDiscovery: false,
+  transports: {
+    [cBtc.id]: http(),
+  },
 });
+
+
+
 
 const queryClient = new QueryClient();
 
@@ -37,13 +48,27 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-      <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>
-        {children}
-        </RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+        <DynamicContextProvider 
+        settings={{
+          environmentId: '588bc342-72ad-4ec8-987d-34da05228081',
+          walletConnectors: [EthereumWalletConnectors],
+        }}
+        >
+          {/* <DynamicWidget />  */}
+          
+
+          
+          <WagmiProvider config={config}>
+          
+            <QueryClientProvider client={queryClient}>
+            <DynamicWagmiConnector>
+                {children}
+                </DynamicWagmiConnector>
+            </QueryClientProvider>
+          
+          </WagmiProvider>
+          
+        </DynamicContextProvider>
     <Toaster />
       </body>
     </html>

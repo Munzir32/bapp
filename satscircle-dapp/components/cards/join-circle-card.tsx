@@ -47,6 +47,7 @@ const JoinCircleCard = ({ id, onJoinSuccess, searchQuery }: JoinCircleCardProps)
 
     const { writeContractAsync } = useWriteContract()
     const { address } = useAccount()
+    console.log(address, "address");
     const { toast } = useToast()
 
     const { circleData } = useReadCircle(id)
@@ -97,12 +98,23 @@ const JoinCircleCard = ({ id, onJoinSuccess, searchQuery }: JoinCircleCardProps)
         formatCircleData()
       }, [formatCircleData])
 
+      const isOwner = !!(address && formattedCircle?.owner && address.toLowerCase() === formattedCircle.owner.toLowerCase())
+
       const handleJoinCircle = async () => {
         try {
           if (!address) {
             toast({
               title: "Wallet Not Connected",
               description: "Please connect your wallet to join a circle.",
+              variant: "destructive"
+            })
+            return
+          }
+
+          if (isOwner) {
+            toast({
+              title: "Owner cannot join",
+              description: "You are the owner of this circle and cannot join it.",
               variant: "destructive"
             })
             return
@@ -254,8 +266,8 @@ const JoinCircleCard = ({ id, onJoinSuccess, searchQuery }: JoinCircleCardProps)
           </div>
           <Button
             onClick={handleJoinCircle}
-            disabled={isJoining}
-            className="bg-orange-500 hover:bg-orange-600"
+            disabled={isJoining || isOwner}
+            className="bg-orange-500 hover:bg-orange-600 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {isJoining ? (
               <>
@@ -265,7 +277,7 @@ const JoinCircleCard = ({ id, onJoinSuccess, searchQuery }: JoinCircleCardProps)
             ) : (
               <>
                 <UserPlus className="w-4 h-4 mr-2" />
-                Join Circle
+                {isOwner ? 'Owner' : 'Join Circle'}
               </>
             )}
           </Button>
