@@ -113,7 +113,7 @@ export const CircleDetails: React.FC<CircleDetailsProps> = ({ id }) => {
             <Coins className="w-4 h-4 text-orange-500" />
             <div>
               <p className="text-sm text-gray-600">Contribution</p>
-              <p className="font-medium">{formattedCircle.contributionAmountFormatted} sats</p>
+              <p className="font-medium">{formattedCircle.contributionAmountFormatted} cBTC</p>
             </div>
           </div>
           <div className="flex items-center space-x-2">
@@ -151,7 +151,7 @@ export const CircleDetails: React.FC<CircleDetailsProps> = ({ id }) => {
           <div className="flex items-center space-x-1">
             <Coins className="w-4 h-4 text-orange-500" />
             <span className="font-medium text-gray-900">
-              {formattedCircle.totalBTCSavedFormatted} sats saved
+              {formattedCircle.totalBTCSavedFormatted} cBTC saved
             </span>
           </div>
           <span className="text-gray-500">Created {formattedCircle.createdAtFormatted}</span>

@@ -95,7 +95,7 @@ const ActiveCard = ({ id }: ActiveCardProps) => {
                   <div>
               <h3 className="font-semibold text-lg text-gray-900">{formattedCircle.name}</h3>
                     <p className="text-sm text-gray-600">
-                {formattedCircle.contributionAmountFormatted} sats • {formattedCircle.frequencyText}
+                {formattedCircle.contributionAmountFormatted} cBTC • {formattedCircle.frequencyText}
                     </p>
                   </div>
             <Badge variant={formattedCircle.nextPayout === "You" ? "default" : "secondary"}>
@@ -128,7 +128,7 @@ const ActiveCard = ({ id }: ActiveCardProps) => {
                     <div className="flex items-center space-x-1">
                       <Coins className="w-4 h-4 text-orange-500" />
                       <span className="font-medium text-gray-900">
-                  {formattedCircle.totalBTCSavedFormatted} sats saved
+                  {formattedCircle.totalBTCSavedFormatted} cBTC saved
                       </span>
                     </div>
                   </div>

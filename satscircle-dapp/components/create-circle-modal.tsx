@@ -231,7 +231,7 @@ export function CreateCircleModal({ open, onOpenChange }: CreateCircleModalProps
                     className="flex-1"
                   />
                   <Badge variant="secondary" className="px-3 py-1">
-                    sats
+                    cBTC
                   </Badge>
                 </div>
                 <p className="text-sm text-gray-500">
@@ -394,7 +394,7 @@ export function CreateCircleModal({ open, onOpenChange }: CreateCircleModalProps
                     <Coins className="w-4 h-4 text-orange-500" />
                     <div>
                       <p className="text-sm text-gray-600">Contribution</p>
-                      <p className="font-medium">{formData.contribution} sats</p>
+                      <p className="font-medium">{formData.contribution} cBTC</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">

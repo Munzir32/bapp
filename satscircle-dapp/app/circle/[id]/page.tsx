@@ -208,7 +208,7 @@ export default function CircleDetail() {
 
       toast({
         title: "Contribution Successful!",
-        description: `You've contributed ${formattedCircle.contributionAmountFormatted} sats to ${formattedCircle.name}`,
+        description: `You've contributed ${formattedCircle.contributionAmountFormatted} cBTC to ${formattedCircle.name}`,
       })
     } catch (error) {
       console.error("Contribution error:", error)

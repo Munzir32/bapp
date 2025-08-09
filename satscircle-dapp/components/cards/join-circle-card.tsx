@@ -151,7 +151,7 @@ const JoinCircleCard = ({ id, onJoinSuccess, searchQuery }: JoinCircleCardProps)
           let errorMessage = "There was an error joining the circle. Please try again."
           
           if (error.message?.includes("insufficient funds")) {
-            errorMessage = `Insufficient funds in your wallet. You need ${formattedCircle.contributionAmountFormatted} sats to join this circle.`
+            errorMessage = `Insufficient funds in your wallet. You need ${formattedCircle.contributionAmountFormatted} cBTC to join this circle.`
           } else if (error.message?.includes("user rejected")) {
             errorMessage = "Transaction was cancelled. Please try again."
           } else if (error.message?.includes("Already a member")) {
@@ -224,7 +224,7 @@ const JoinCircleCard = ({ id, onJoinSuccess, searchQuery }: JoinCircleCardProps)
             <Coins className="w-4 h-4 text-orange-500" />
             <div>
               <p className="text-xs text-gray-500">Contribution</p>
-              <p className="text-sm font-medium">{formattedCircle.contributionAmountFormatted} sats</p>
+              <p className="text-sm font-medium">{formattedCircle.contributionAmountFormatted} cBTC</p>
             </div>
           </div>
           <div className="flex items-center space-x-2">

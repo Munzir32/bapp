@@ -54,7 +54,7 @@ export function StatusBanner({
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-1">
                 <Coins className="w-4 h-4 text-orange-500" />
-                <span className="text-sm font-medium">{totalBTCSavedFormatted} sats saved</span>
+                <span className="text-sm font-medium">{totalBTCSavedFormatted} cBTC saved</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Users className="w-4 h-4 text-blue-500" />
@@ -72,7 +72,7 @@ export function StatusBanner({
                   Distributing...
                 </>
               ) : isOwner ? (
-                `Distribute Payout (${contributionAmountFormatted} sats)`
+                `Distribute Payout (${contributionAmountFormatted} cBTC)`
               ) : (
                 "Only Owner Can Distribute"
               )}
