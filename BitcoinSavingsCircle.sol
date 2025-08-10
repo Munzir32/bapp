@@ -43,6 +43,8 @@ contract BitcoinSavingsCircle is ReentrancyGuard, Ownable {
         uint256 lastContributionRound;
         bool isActive;
         Badge[] badges;
+        uint256 pendingPayout; // Add this field for pending payouts
+        bool hasClaimedCurrentRound; // Add this to track if member claimed current round
     }
 
     struct Contribution {
@@ -141,7 +143,9 @@ contract BitcoinSavingsCircle is ReentrancyGuard, Ownable {
             longestStreak: 1,
             lastContributionRound: 1,
             isActive: true,
-            badges: new Badge[](0)
+            badges: new Badge[](0),
+            pendingPayout: 0,
+            hasClaimedCurrentRound: false
         });
 
         circleMembers[circleId].push(msg.sender);
@@ -183,7 +187,9 @@ contract BitcoinSavingsCircle is ReentrancyGuard, Ownable {
             longestStreak: 1,
             lastContributionRound: circle.currentRound,
             isActive: true,
-            badges: new Badge[](0)
+            badges: new Badge[](0),
+            pendingPayout: 0,
+            hasClaimedCurrentRound: false
         });
 
         circleMembers[circleId].push(msg.sender);
@@ -286,11 +292,39 @@ contract BitcoinSavingsCircle is ReentrancyGuard, Ownable {
         // Reset total BTC saved for new round
         circle.totalBTCSaved = 0;
 
-        // Transfer payout
-        (bool success, ) = recipient.call{value: payoutAmount}("");
-        require(success, "Payout transfer failed");
+        // Mark next recipient as eligible for payout instead of sending it directly
+        members[circleId][recipient].pendingPayout += payoutAmount;
+        members[circleId][recipient].hasClaimedCurrentRound = false;
+        
+        // Reset claimed status for all members for the new round
+        for (uint256 i = 0; i < totalMembers; i++) {
+            address memberAddr = circleMembers[circleId][i];
+            members[circleId][memberAddr].hasClaimedCurrentRound = false;
+        }
 
         emit PayoutSent(circleId, recipient, payoutAmount, circle.currentRound - 1);
+    }
+
+    /**
+     * @dev Claim pending payout for the current round
+     * @param circleId ID of the circle
+     */
+    function claimPayout(uint256 circleId) external circleExists(circleId) onlyCircleMember(circleId) nonReentrant {
+        Circle storage circle = circles[circleId];
+        Member storage member = members[circleId][msg.sender];
+        require(circle.isActive, "Circle is not active");
+        require(member.isActive, "Member is not active");
+        require(member.pendingPayout > 0, "No pending payout");
+        require(!member.hasClaimedCurrentRound, "Already claimed payout for this round");
+
+        uint256 payoutAmount = member.pendingPayout;
+        member.pendingPayout = 0;
+        member.hasClaimedCurrentRound = true;
+
+        (bool success, ) = msg.sender.call{value: payoutAmount}("");
+        require(success, "Claim payout transfer failed");
+
+        emit PayoutSent(circleId, msg.sender, payoutAmount, circle.currentRound - 1);
     }
 
     /**
@@ -464,6 +498,16 @@ contract BitcoinSavingsCircle is ReentrancyGuard, Ownable {
      */
     function isCircleMember(uint256 circleId, address user) external view circleExists(circleId) returns (bool isMember) {
         return members[circleId][user].addr != address(0) && members[circleId][user].isActive;
+    }
+
+    /**
+     * @dev Get pending payout for a member
+     * @param circleId ID of the circle
+     * @param memberAddr Address of the member
+     * @return pendingPayout Amount pending for the member
+     */
+    function getPendingPayout(uint256 circleId, address memberAddr) external view circleExists(circleId) returns (uint256 pendingPayout) {
+        return members[circleId][memberAddr].pendingPayout;
     }
 
     // Fallback function to receive BTC
