@@ -90,9 +90,9 @@ const {setShowAuthFlow, user} = useDynamicContext()
 
             {user ? (
               <Link href="/dashboard">
-                {/* <Button variant="outline" className="w-full h-12"> */}
-                  Dashboard
-                {/* </Button> */}
+                <Button variant="outline" className="w-full h-12">
+                  Continue to Dashboard
+                </Button>
               </Link>
             ) : (
               // <Button variant="outline" className="w-full h-12">
