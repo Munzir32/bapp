@@ -11,7 +11,7 @@ import { DynamicConnectButton } from "@dynamic-labs/sdk-react-core"
 import { DynamicWidget } from "@dynamic-labs/sdk-react-core"
 export default function LandingPage() {
   // const [isLoading, setIsLoading] = useState(false)
-const {setShowAuthFlow } = useDynamicContext()
+const {setShowAuthFlow, user} = useDynamicContext()
   // const handleLogin = async (provider: string) => {
   //   setIsLoading(true)
   //   // Simulate Web3Auth login
@@ -88,9 +88,17 @@ const {setShowAuthFlow } = useDynamicContext()
               Continue with Apple
             </Button> */}
 
-            <Button variant="outline" className="w-full h-12">
-              <DynamicWidget />
-            </Button>
+            {user ? (
+              <Link href="/dashboard">
+                <Button variant="outline" className="w-full h-12">
+                  Dashboard
+                </Button>
+              </Link>
+            ) : (
+              <Button variant="outline" className="w-full h-12">
+                <DynamicWidget />
+              </Button>
+            )}
             
           </div>
 
