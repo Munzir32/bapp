@@ -63,15 +63,7 @@ export default function CircleDetail() {
 
   const isMember = Boolean(isMemberData)
 
-  console.log("circleMembers raw data:", circleMembers)
-  console.log("circleMembers type:", typeof circleMembers)
-  console.log("circleMembers is array:", Array.isArray(circleMembers))
-  console.log("circleMembers keys:", circleMembers ? Object.keys(circleMembers) : "null")
-  console.log("circleMembers values:", circleMembers ? Object.values(circleMembers) : "null")
-  console.log("circleMembers[0]:", Array.isArray(circleMembers) ? (circleMembers as any[])[0] : "not array")
-  console.log("circleMembers[0] type:", Array.isArray(circleMembers) ? typeof (circleMembers as any[])[0] : "not array")
-  console.log("circleMembers[0] keys:", Array.isArray(circleMembers) && (circleMembers as any[])[0] ? Object.keys((circleMembers as any[])[0]) : "not array or null")
-  console.log("circleMembers[0] values:", Array.isArray(circleMembers) && (circleMembers as any[])[0] ? Object.values((circleMembers as any[])[0]) : "not array or null")
+
 
   const formatCircleData = useCallback(async () => {
     if (!circleData || !Array.isArray(circleData)) {
@@ -130,7 +122,7 @@ export default function CircleDetail() {
       }
     }
 
-    console.log("Extracted member addresses:", memberAddresses)
+
 
     const realMembers = memberAddresses.map((memberAddr: string, index: number) => {
       // Ensure memberAddr is a string and has the slice method
@@ -189,7 +181,7 @@ export default function CircleDetail() {
 
   const handleSendMessage = (message: string) => {
       // Handle sending message
-      console.log("Sending message:", message)
+  
   }
 
   const handlePayNow = async () => {

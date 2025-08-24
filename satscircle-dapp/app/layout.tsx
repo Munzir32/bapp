@@ -1,13 +1,9 @@
 'use client'
 import type React from "react"
-import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import '@rainbow-me/rainbowkit/styles.css';
-import {
-  getDefaultConfig,
-  RainbowKitProvider,
-} from '@rainbow-me/rainbowkit';
+
 import { WagmiProvider } from 'wagmi';
 import {
   QueryClientProvider,
@@ -17,7 +13,6 @@ import { cBtc } from "@/config"
 import { Toaster } from "@/components/ui/toaster"
 import {
   DynamicContextProvider,
-  DynamicWidget,
 } from '@dynamic-labs/sdk-react-core';
 import { EthereumWalletConnectors } from '@dynamic-labs/ethereum';
 import { DynamicWagmiConnector } from '@dynamic-labs/wagmi-connector';

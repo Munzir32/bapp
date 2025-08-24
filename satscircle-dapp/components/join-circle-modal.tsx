@@ -40,8 +40,6 @@ export function JoinCircleModal({ open, onOpenChange }: JoinCircleModalProps) {
         return
       }
 
-      console.log("Joining with invite code:", inviteCode)
-      
       // For now, we'll show a placeholder message since invite codes need additional implementation
       // 1. Decode the invite code to get circle ID
       // 2. Fetch circle details from the blockchain

@@ -92,14 +92,7 @@ export function CreateCircleModal({ open, onOpenChange }: CreateCircleModalProps
       const memberLimit = BigInt(formData.groupSize)
       const visibility = formData.isPrivate ? 1 : 0 // 0 = PUBLIC, 1 = PRIVATE
 
-      console.log("Creating circle with params:", {
-        name: formData.name,
-        contributionAmount: contributionAmount.toString(),
-        frequency,
-        memberLimit: memberLimit.toString(),
-        visibility,
-        value: contributionAmount.toString()
-      })
+
 
       // Call the createCircle function
       const result = await writeContractAsync({
@@ -116,9 +109,7 @@ export function CreateCircleModal({ open, onOpenChange }: CreateCircleModalProps
         value: contributionAmount
       })
 
-      console.log("Circle created successfully:", result)
-      
-      // Show success message
+              // Show success message
       toast({
         title: "Circle Created Successfully! 🎉",
         description: `Your "${formData.name}" circle has been created. You can now invite members to join.`,

@@ -2,13 +2,12 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Plus, Users, Coins, Award, Target } from "lucide-react"
+import { Plus, Users, Coins } from "lucide-react"
 import { CreateCircleModal } from "@/components/create-circle-modal"
 import { JoinCircleModal } from "@/components/join-circle-modal"
 import { ActiveCircles } from "@/components/active-circles"
 import { StatsCards } from "@/components/stats-cards"
 import { BadgesSection } from "@/components/badges-section"
-import { RecentActivity } from "@/components/recent-activity"
 import { DynamicWidget } from "@dynamic-labs/sdk-react-core"
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core"
 import { useDashboardStats } from "@/hooks/useDashboardStats"
@@ -19,79 +18,6 @@ export default function Dashboard() {
   const { user } = useDynamicContext()
 
   const { stats, isLoading } = useDashboardStats()
-
-  const activeCircles = [
-    {
-      id: 1,
-      name: "Family Savers",
-      members: 6,
-      totalMembers: 6,
-      contribution: 10000,
-      frequency: "Weekly",
-      nextPayout: "Sarah",
-      daysUntilContribution: 3,
-      progress: 67,
-      totalSaved: 240000,
-    },
-    {
-      id: 2,
-      name: "College Friends",
-      members: 4,
-      totalMembers: 5,
-      contribution: 25000,
-      frequency: "Monthly",
-      nextPayout: "You",
-      daysUntilContribution: 12,
-      progress: 80,
-      totalSaved: 500000,
-    },
-  ]
-
-  const derivedStats = isLoading
-    ? { totalSaved: 0, activeCircles: 0, currentStreak: 0, completedCircles: 0 }
-    : stats
-
-  const badges = [
-    { name: "Early Adopter", icon: "🚀", earned: true },
-    { name: "Consistent Saver", icon: "💎", earned: true },
-    { name: "Circle Creator", icon: "👑", earned: false },
-    { name: "Bitcoin Builder", icon: "🏗️", earned: true },
-  ]
-
-  const activities = [
-    {
-      id: "1",
-      type: "contribution" as const,
-      title: "Contributed to Family Savers",
-      description: "Made weekly contribution",
-      amount: "+10,000 cBTC",
-      icon: Coins,
-      iconBg: "bg-green-100", 
-      iconColor: "text-green-600",
-      timestamp: "2 days ago"
-    },
-    {
-      id: "2",
-      type: "badge" as const,
-      title: "Earned \"Consistent Saver\" badge",
-      description: "Achievement unlocked",
-      icon: Award,
-      iconBg: "bg-blue-100",
-      iconColor: "text-blue-600",
-      timestamp: "1 week ago"
-    },
-    {
-      id: "3",
-      type: "payout" as const,
-      title: "Received payout from College Friends",
-      description: "Circle payout received",
-      amount: "125,000 cBTC",
-      icon: Target,
-      iconBg: "bg-orange-100",
-      iconColor: "text-orange-600",
-      timestamp: "2 weeks ago"
-    }
-  ]
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -118,7 +44,7 @@ export default function Dashboard() {
         </div>
 
         {/* Stats Cards */}
-        <StatsCards stats={derivedStats} />
+        <StatsCards stats={isLoading ? { totalSaved: 0, activeCircles: 0, currentStreak: 0, completedCircles: 0 } : stats} />
 
         {/* Quick Actions */}
         <div className="flex flex-col sm:flex-row gap-3 mb-8">
@@ -138,12 +64,9 @@ export default function Dashboard() {
         </div>
 
         {/* Badges & Achievements */}
-        <BadgesSection badges={badges} />
-
-        {/* Recent Activity */}
-        {/* <RecentActivity activities={activities} /> */}
+        <BadgesSection />
       </main>
-      {/* done */}
+
       <CreateCircleModal open={showCreateModal} onOpenChange={setShowCreateModal} />
       <JoinCircleModal open={showJoinModal} onOpenChange={setShowJoinModal} />
     </div>
