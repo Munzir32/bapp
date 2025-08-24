@@ -11,6 +11,7 @@ import { BadgesSection } from "@/components/badges-section"
 import { DynamicWidget } from "@dynamic-labs/sdk-react-core"
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core"
 import { useDashboardStats } from "@/hooks/useDashboardStats"
+import { NotificationsBell } from "@/components/notifications/notifications-bell"
 
 export default function Dashboard() {
   const [showCreateModal, setShowCreateModal] = useState(false)
@@ -31,7 +32,10 @@ export default function Dashboard() {
               </div>
               <span className="text-xl font-bold text-gray-900">SatsCircle</span>
             </div>
-            <DynamicWidget />
+            <div className="flex items-center space-x-3">
+              <NotificationsBell />
+              <DynamicWidget />
+            </div>
           </div>
         </div>
       </header>

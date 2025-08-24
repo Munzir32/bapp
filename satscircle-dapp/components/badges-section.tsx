@@ -9,16 +9,19 @@ interface Badge {
   earned: boolean
 }
 
-interface BadgesSectionProps {
-  badges: Badge[]
-}
+export function BadgesSection() {
+  const defaultBadges: Badge[] = [
+    { name: "Early Adopter", icon: "🚀", earned: true },
+    { name: "Consistent Saver", icon: "💎", earned: true },
+    { name: "Circle Creator", icon: "👑", earned: false },
+    { name: "Bitcoin Builder", icon: "🏗️", earned: true },
+  ]
 
-export function BadgesSection({ badges }: BadgesSectionProps) {
   return (
     <div className="mb-8">
       <h2 className="text-xl font-bold text-gray-900 mb-4">Your Badges</h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {badges.map((badge, index) => (
+        {defaultBadges.map((badge, index) => (
           <Card
             key={index}
             className={`text-center ${
